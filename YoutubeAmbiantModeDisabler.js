@@ -21,16 +21,21 @@ $(document).ready(function() {
         } else if (/https:\/\/www\.youtube\.com\/watch.*/.test(document.URL)) {
             $(".ytp-settings-button").click()
             setTimeout(function() {
+
                 var ariaChecked = $('div:contains("' + text + '")').parents('div[class^="ytp-menuitem"]')[0].ariaChecked
                 if (ariaChecked == "true") {
                     $('div:contains("' + text + '")').parents('div[class^="ytp-menuitem"]')[0].click()
                     k = 501
                 }
+
                 if (ariaChecked == "false") {
                     k = 501
                 }
-                $(".ytp-settings-button").click()
-            }, 100);
+
+
+            }, 100)
+            $(".ytp-settings-button").click()
+
         }
         k++
     }
@@ -38,4 +43,5 @@ $(document).ready(function() {
     var itvl3 = window.setInterval(function() {
         checkAmbientMode();
     }, 1000);
+
 });
