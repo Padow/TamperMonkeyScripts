@@ -16,20 +16,27 @@ $(document).ready(function() {
     var text = "Éclairage de cinéma"
 
     function checkAmbientMode() {
+        console.log("count :" + k)
         if (k > 500) {
+            console.log("clearInterval " + k)
             window.clearInterval(itvl3);
         } else if (/https:\/\/www\.youtube\.com\/watch.*/.test(document.URL)) {
             $(".ytp-settings-button").click()
-            var ariaChecked = $('div:contains("'+text+'")').parents('div[class^="ytp-menuitem"]')[0].ariaChecked
-            if (ariaChecked == "true") {
-                $('div:contains("'+text+'")').parents('div[class^="ytp-menuitem"]')[0].click()
-                k = 501
-            }
+            setTimeout(function() {
 
-           if(ariaChecked == "false") {
-               k = 501
-           }
-            $(".ytp-settings-button").click()
+                var ariaChecked = $('div:contains("' + text + '")').parents('div[class^="ytp-menuitem"]')[0].ariaChecked
+                if (ariaChecked == "true") {
+                    $('div:contains("' + text + '")').parents('div[class^="ytp-menuitem"]')[0].click()
+                    k = 501
+                }
+
+                if (ariaChecked == "false") {
+                    k = 501
+                }
+                $(".ytp-settings-button").click()
+
+            }, 100);
+
         }
         k++
     }
