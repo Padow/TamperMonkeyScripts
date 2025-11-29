@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Youtube cookie denial & ambiant mode disabler
+// @name         Youtube cookie denial
 // @namespace    http://tampermonkey.net/
 // @version      2025-11-29
-// @description  refuse cookie disable ambiant light
+// @description  refuse cookie
 // @copyright none
 // @require https://code.jquery.com/jquery-latest.min.js
 // @match https://www.youtube.com/*
