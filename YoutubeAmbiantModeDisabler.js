@@ -16,9 +16,7 @@ $(document).ready(function() {
     var text = "Éclairage de cinéma"
 
     function checkAmbientMode() {
-        console.log("count :" + k)
         if (k > 500) {
-            console.log("clearInterval " + k)
             window.clearInterval(itvl3);
         } else if (/https:\/\/www\.youtube\.com\/watch.*/.test(document.URL)) {
             $(".ytp-settings-button").click()
@@ -39,6 +37,5 @@ $(document).ready(function() {
     var itvl3 = window.setInterval(function() {
         checkAmbientMode();
     }, 1000);
-
 
 });
