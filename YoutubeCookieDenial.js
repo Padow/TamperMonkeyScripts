@@ -45,37 +45,12 @@ $(document).ready(function() {
         }
     }
 
-
-    var k = 0;
-
-    function checkAmbientMode() {
-        if (end) {
-            if (k > 10) {
-                window.clearInterval(itvl3);
-            } else {
-
-                $(".ytp-settings-button").click()
-                setTimeout(function() {
-                    if ($('div:contains("Éclairage de cinéma")').parents('div[class^="ytp-menuitem"]')[0].ariaChecked == "true") {
-                        $('div:contains("Éclairage de cinéma")').parents('div[class^="ytp-menuitem"]')[0].click()
-                    }
-                    $(".ytp-settings-button").click()
-                }, 100);
-                k = 20
-            }
-        }
-    }
-
     var itvl1 = window.setInterval(function() {
         defuse();
     }, 100);
-
 
     var itvl2 = window.setInterval(function() {
         defusebis();
     }, 500);
 
-    var itvl3 = window.setInterval(function() {
-        checkAmbientMode();
-    }, 500);
 });
