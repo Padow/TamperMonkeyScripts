@@ -2,22 +2,17 @@
 // @name         Youtube cookie denial
 // @namespace    http://tampermonkey.net/
 // @version      2025-11-29
-// @description  refuse cookie
+// @description  refuse cookie disable ambiant light
+// @icon https://raw.githubusercontent.com/Padow/TamperMonkeyScripts/refs/heads/main/NoCookies.png
 // @copyright none
-// @require https://code.jquery.com/jquery-latest.min.js
 // @match https://www.youtube.com/*
 // @match https://consent.youtube.com/*
 // ==/UserScript==
 
-/* globals jQuery, $, waitForKeyElements */
-
-$(document).ready(function() {
-
+(function() {
+    'use strict';
     var i = 0
     var j = 0
-
-    var end = false
-
     var defuse = function() {
         var yt = document.querySelectorAll('[aria-label="Refuser l\'utilisation de cookies et d\'autres données aux fins décrites"]')[0];
         if (yt != null) {
@@ -27,7 +22,6 @@ $(document).ready(function() {
         }
         i++
         if (i > 10) {
-            end = true
             window.clearInterval(itvl1);
         }
     }
@@ -49,8 +43,9 @@ $(document).ready(function() {
         defuse();
     }, 100);
 
+
     var itvl2 = window.setInterval(function() {
         defusebis();
-    }, 500);
+    }, 100);
 
-});
+})();
