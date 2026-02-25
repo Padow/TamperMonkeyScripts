@@ -4,27 +4,34 @@
 // @version      2025-11-29
 // @description  disable ambiant light
 // @copyright none
-// @require https://code.jquery.com/jquery-latest.min.js
 // @match https://www.youtube.com/*
 // ==/UserScript==
 
-/* globals jQuery, $, waitForKeyElements */
-
-$(document).ready(function() {
+(function() {
+    'use strict';
 
     var k = 0;
-    const text = "Éclairage de cinéma"
+    var l = 0
+    const ambiantLight = "Éclairage de cinéma"
+
+    function getDiv(text) {
+        return Array.prototype.slice.call(document.querySelectorAll('div'))
+                 .filter(function (el) {
+                    return el.textContent === text
+               })[0]
+    }
 
     function checkAmbientMode() {
         if (k > 500) {
             window.clearInterval(itvl3);
         } else if (/https:\/\/www\.youtube\.com\/watch.*/.test(document.URL)) {
-            $(".ytp-settings-button").click()
+            document.querySelectorAll(".ytp-settings-button")[0].click()
             setTimeout(function() {
 
-                var ariaChecked = $('div:contains("' + text + '")').parents('div[class^="ytp-menuitem"]')[0].ariaChecked
+                var ariaChecked = getDiv(ambiantLight).ariaChecked
+                console.error(ariaChecked)
                 if (ariaChecked == "true") {
-                    $('div:contains("' + text + '")').parents('div[class^="ytp-menuitem"]')[0].click()
+                    getDiv(ambiantLight).click()
                     k = 501
                 }
 
@@ -34,14 +41,40 @@ $(document).ready(function() {
 
 
             }, 100)
-            $(".ytp-settings-button").click()
+            document.querySelectorAll(".ytp-settings-button")[0].click()
 
         }
         k++
     }
 
+  function autoNaveDisable() {
+        if (l > 500) {
+            window.clearInterval(itvl4);
+        } else if (/https:\/\/www\.youtube\.com\/watch.*/.test(document.URL) && k > 500) {
+
+            setTimeout(function() {
+                var button = document.querySelectorAll(".ytp-autonav-toggle-button")[0];
+                var ariaChecked = button.ariaChecked
+                if (ariaChecked == "true") {
+                    button.click();
+                    l = 501
+                }
+
+                if (ariaChecked == "false") {
+                    l = 501
+                }
+
+            }, 100)
+        }
+        l++
+    }
+
+
     var itvl3 = window.setInterval(function() {
         checkAmbientMode();
     }, 1000);
 
-});
+    var itvl4 = window.setInterval(function() {
+        autoNaveDisable();
+    })
+})();
