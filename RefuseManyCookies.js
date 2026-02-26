@@ -32,7 +32,7 @@
             })[0]
     }
 
-    var wordings = ["Continuer sans accepter", "Refuser", "Refuser les cookies non nécessaires", "Reject", "Tout Refuser", "Reject Optional Cookies", "Reject all"]
+    var wordings = ["Continuer sans accepter", "Refuser", "Refuser les cookies non nécessaires", "Reject", "Tout rejeter" ,"Tout Refuser", "Reject Optional Cookies", "deny", "Reject all"]
 
     const maxTry = 50
     const itvl11 = window.setInterval(defuse, 500);
@@ -43,7 +43,6 @@
         } else {
             wordings.some((element) => {
                 i++
-                //console.log(element + " - " + i)
                 if (i > maxTry - 1) {
                     return true;
                 }
@@ -52,21 +51,25 @@
                 var rlink = getLink(element);
 
                 if (rspan != undefined && i < maxTry - 1) {
-                    console.warn("Cookies refused")
+                    console.warn("Cookies refused span")
+                    console.log(element + " - " + i)
                     rspan.click()
                     i = maxTry
                 }
                 if (rbutton != undefined && i < maxTry - 1) {
-                    console.warn("Cookies refused")
+                    console.warn("Cookies refused button")
+                    console.log(element + " - " + i)
                     rbutton.click()
                     i = maxTry
                 }
                 if (rlink != undefined && i < maxTry - 1) {
-                    console.warn("Cookies refused")
+                    console.warn("Cookies refused link")
+                    console.log(element + " - " + i)
                     rlink.click()
                     i = maxTry
                 }
             })
         }
     }
+
 })();
