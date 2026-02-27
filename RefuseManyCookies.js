@@ -32,11 +32,21 @@
             })[0]
     }
 
-    var wordings = ["Continuer sans accepter", "Refuser", "Refuser les cookies non nécessaires", "Reject", "Tout rejeter" ,"Tout Refuser", "Reject Optional Cookies", "deny", "Reject all"]
+    const excludeWebsites = []
+
+    const wordings = ["Continuer sans accepter", "Refuser",
+                    "Refuser les cookies non nécessaires",
+                    "Reject", "Tout rejeter" ,
+                    "Tout Refuser",
+                    "Reject Optional Cookies", "deny", "Reject all",
+                    "Use necessary cookies only"]
 
     const maxTry = 50
     const itvl11 = window.setInterval(defuse, 500);
     var i = 0
+    //console.warn(document.URL.split("/", 3)[2])
+    if (excludeWebsites.includes(document.URL.split("/", 3)[2])) { i = maxTry}
+
     function defuse() {
         if (i > maxTry - 1) {
             window.clearInterval(itvl11);
