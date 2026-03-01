@@ -11,6 +11,34 @@
 (function() {
     'use strict';
 
+    console.log("############################# SCRIPT LOADED ##########################################")
+    const excludeWebsites = ["www.cse-sncf-connect.com"]
+
+    const wordings = ["Continuer sans accepter",
+        "Continuer sans accepter →",
+        "Refuser",
+        "Refuser les cookies non nécessaires",
+        "Reject", "Tout rejeter",
+        "Tout Refuser",
+        "Refuser",
+        "Reject Optional Cookies",
+        "deny",
+        "Reject all",
+        "Use necessary cookies only",
+        "Only necessary cookies"
+    ]
+
+    const maxTry = 100
+    var i = 0
+    var seekAndDestroyCookie = undefined
+    var awaitPageLoad = undefined
+
+
+    //console.warn(document.URL.split("/", 3)[2])
+    if (!excludeWebsites.includes(document.URL.split("/", 3)[2])) {
+        awaitPageLoad = window.setInterval(isPageLoaded, 20)
+    }
+
     function getSpan(text) {
         return Array.prototype.slice.call(document.querySelectorAll('span'))
             .filter(function(el) {
@@ -32,52 +60,51 @@
             })[0]
     }
 
-    const excludeWebsites = []
+    function isPageLoaded() {
+        if (document.readyState === "complete") {
+            seekAndDestroyCookie = window.setInterval(seekAndClickRefuseCookie, 150);
+            window.clearInterval(awaitPageLoad);
+        }
+    }
 
-    const wordings = ["Continuer sans accepter", "Refuser",
-                    "Refuser les cookies non nécessaires",
-                    "Reject", "Tout rejeter" ,
-                    "Tout Refuser",
-                    "Reject Optional Cookies", "deny", "Reject all",
-                    "Use necessary cookies only"]
-
-    const maxTry = 50
-    const itvl11 = window.setInterval(defuse, 500);
-    var i = 0
-    //console.warn(document.URL.split("/", 3)[2])
-    if (excludeWebsites.includes(document.URL.split("/", 3)[2])) { i = maxTry}
-
-    function defuse() {
-        if (i > maxTry - 1) {
-            window.clearInterval(itvl11);
+    function seekAndClickRefuseCookie() {
+        if (i >= maxTry) {
+            console.warn("Clear interval " + i)
+            window.clearInterval(seekAndDestroyCookie);
         } else {
             wordings.some((element) => {
-                i++
-                if (i > maxTry - 1) {
+                if (i >= maxTry) {
                     return true;
                 }
-                var rspan = getSpan(element);
-                var rbutton = getButton(element);
-                var rlink = getLink(element);
 
-                if (rspan != undefined && i < maxTry - 1) {
-                    console.warn("Cookies refused span")
-                    console.log(element + " - " + i)
-                    rspan.click()
-                    i = maxTry
-                }
-                if (rbutton != undefined && i < maxTry - 1) {
+                var rbutton = getButton(element);
+                if (rbutton != undefined && i < maxTry) {
                     console.warn("Cookies refused button")
-                    console.log(element + " - " + i)
+                    //console.info(element + " - " + i)
                     rbutton.click()
                     i = maxTry
+                    return true;
                 }
-                if (rlink != undefined && i < maxTry - 1) {
+
+                var rspan = getSpan(element);
+                if (rspan != undefined && i < maxTry) {
+                    console.warn("Cookies refused span")
+                    //console.log(element + " - " + i)
+                    rspan.click()
+                    i = maxTry
+                    return true;
+                }
+
+                var rlink = getLink(element);
+                if (rlink != undefined && i < maxTry) {
                     console.warn("Cookies refused link")
-                    console.log(element + " - " + i)
+                    //console.log(element + " - " + i)
                     rlink.click()
                     i = maxTry
+                    return true;
                 }
+
+                i++
             })
         }
     }
