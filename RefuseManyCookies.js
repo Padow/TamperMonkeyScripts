@@ -12,7 +12,7 @@
     'use strict';
 
     console.log("############################# SCRIPT LOADED ##########################################")
-    const excludeWebsites = ["www.cse-sncf-connect.com"]
+    const excludeWebsites = []
 
     const wordings = ["Continuer sans accepter",
         "Continuer sans accepter →",
