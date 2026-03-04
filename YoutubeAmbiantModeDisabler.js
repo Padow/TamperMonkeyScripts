@@ -10,58 +10,63 @@
 (function() {
     'use strict';
 
-    var k = 0;
+    var k = 0
     var l = 0
+    var awaitTime = 0
+    const maxk = 5
+    const maxAwaitTime = 500
     const ambiantLight = "Éclairage de cinéma"
 
     function getDiv(text) {
         return Array.prototype.slice.call(document.querySelectorAll('div'))
-                 .filter(function (el) {
-                    return el.textContent === text
-               })[0]
+            .filter(function(el) {
+                return el.textContent === text
+            })[0]
     }
 
     function checkAmbientMode() {
-        if (k > 500) {
+        if (k >= maxk || awaitTime >= maxAwaitTime) {
+            console.warn("Clear interval ambiant mode")
             window.clearInterval(itvl3);
         } else if (/https:\/\/www\.youtube\.com\/watch.*/.test(document.URL)) {
-            document.querySelectorAll(".ytp-settings-button")[0].click()
-            setTimeout(function() {
-
-                var ariaChecked = getDiv(ambiantLight).ariaChecked
-                console.error(ariaChecked)
-                if (ariaChecked == "true") {
-                    getDiv(ambiantLight).click()
-                    k = 501
-                }
-
-                if (ariaChecked == "false") {
-                    k = 501
-                }
-
-
-            }, 100)
-            document.querySelectorAll(".ytp-settings-button")[0].click()
-
+            var cogWheel = document.querySelectorAll(".ytp-settings-button")[0]
+            console.log(cogWheel)
+            if (cogWheel != undefined) {
+                cogWheel.click()
+                setTimeout(function() {
+                    var sliderButton = getDiv(ambiantLight)
+                    if (sliderButton != undefined) {
+                        if (sliderButton.ariaChecked == "true") {
+                            sliderButton.click()
+                        }
+                        k = maxk
+                    }
+                }, 100)
+                cogWheel.click()
+            }
+            k++
         }
-        k++
+        awaitTime++
     }
 
-  function autoNaveDisable() {
+    function autoNaveDisable() {
         if (l > 500) {
+            console.warn("Clear interval auto nav")
             window.clearInterval(itvl4);
-        } else if (/https:\/\/www\.youtube\.com\/watch.*/.test(document.URL) && k > 500) {
+        } else if (/https:\/\/www\.youtube\.com\/watch.*/.test(document.URL) && k >= maxk) {
 
             setTimeout(function() {
                 var button = document.querySelectorAll(".ytp-autonav-toggle-button")[0];
-                var ariaChecked = button.ariaChecked
-                if (ariaChecked == "true") {
-                    button.click();
-                    l = 501
-                }
+                if (button != undefined) {
+                    var ariaChecked = button.ariaChecked
+                    if (ariaChecked == "true") {
+                        button.click();
+                        l = 501
+                    }
 
-                if (ariaChecked == "false") {
-                    l = 501
+                    if (ariaChecked == "false") {
+                        l = 501
+                    }
                 }
 
             }, 100)
@@ -72,9 +77,9 @@
 
     var itvl3 = window.setInterval(function() {
         checkAmbientMode();
-    }, 1000);
+    }, 500);
 
     var itvl4 = window.setInterval(function() {
         autoNaveDisable();
-    })
+    }, 100)
 })();
