@@ -17,8 +17,10 @@
     const wordings = ["Continuer sans accepter",
         "Continuer sans accepter →",
         "Refuser les cookies non nécessaires",
+        "Refuser tous les cookies",
         "Tout rejeter",
         "Tout Refuser",
+        "Refuser tous",
         "Reject Optional Cookies",
         "Reject all",
         "Use necessary cookies only",
@@ -28,10 +30,11 @@
         "deny",
     ]
 
-    const maxTry = 100
+    const maxTry = 200
     var i = 0
     var seekAndDestroyCookie = undefined
     var awaitPageLoad = undefined
+    var shadowDom = undefined
 
     if (!excludeWebsites.includes(webSiteUrl) && !getCookie(webSiteUrl)) {
         awaitPageLoad = window.setInterval(isPageLoaded, 20)
@@ -39,35 +42,36 @@
         console.log("Script already executed or is disabled for this site")
     }
 
-    function getSpan(text) {
-        return Array.prototype.slice.call(document.querySelectorAll('span'))
-            .filter(function(el) {
-                return el.textContent.trim().toLowerCase() === text.toLowerCase()
-            })[0]
+    function findElement(text, elementKind) {
+        return Array.prototype.slice.call(document.querySelectorAll(elementKind))
+            .find((el) => el.textContent.trim().toLowerCase() === text.toLowerCase())
     }
 
-    function getButton(text) {
-        return Array.prototype.slice.call(document.querySelectorAll('button'))
-            .filter(function(el) {
-                return el.textContent.trim().toLowerCase() === text.toLowerCase()
-            })[0]
-    }
-
-    function getLink(text) {
-        return Array.prototype.slice.call(document.querySelectorAll('a'))
-            .filter(function(el) {
-                return el.textContent.trim().toLowerCase() === text.toLowerCase()
-            })[0]
+    function findElementInShadow(text, elementKind, shadow) {
+        return Array.prototype.slice.call(shadow.querySelectorAll(elementKind))
+            .find((el) => el.textContent.trim().toLowerCase() === text.toLowerCase())
     }
 
     function isPageLoaded() {
         if (document.readyState === "complete") {
-            seekAndDestroyCookie = window.setInterval(seekAndClickRefuseCookie, 150);
+            seekAndDestroyCookie = window.setInterval(function() {
+                seekAndClickRefuseCookie();
+            }, 150);
             window.clearInterval(awaitPageLoad);
         }
     }
 
+    function findRoots(el) {
+        return [
+                el,
+                ...el.querySelectorAll('*')
+            ].filter(e => !!e.shadowRoot)
+            .flatMap(e => [e.shadowRoot, ...findRoots(e.shadowRoot)])
+    }
+
+
     function seekAndClickRefuseCookie() {
+        i++;
         if (i >= maxTry) {
             setCookie(webSiteUrl, true, 1)
             console.warn("Clear interval " + i)
@@ -78,37 +82,49 @@
                     return true;
                 }
 
-                var rbutton = getButton(element);
-                if (rbutton != undefined && i < maxTry) {
-                    console.warn("Cookies refused button")
-                    //console.info(element + " - " + i)
-                    rbutton.click()
-                    i = maxTry
-                    return true;
-                }
-
-                var rspan = getSpan(element);
-                if (rspan != undefined && i < maxTry) {
-                    console.warn("Cookies refused span")
-                    //console.log(element + " - " + i)
-                    rspan.click()
-                    i = maxTry
-                    return true;
-                }
-
-                var rlink = getLink(element);
-                if (rlink != undefined && i < maxTry) {
-                    console.warn("Cookies refused link")
-                    //console.log(element + " - " + i)
-                    rlink.click()
-                    i = maxTry
-                    return true;
-                }
-
-                i++
+                clicker(element, 'button');
+                clicker(element, 'span');
+                clicker(element, 'a');
             })
+
+
+            shadowDom = findRoots(document);
+            shadowDom.forEach(sd => {
+                wordings.some((element) => {
+                    if (i >= maxTry) {
+                        return true;
+                    }
+                    shadowClick(element, 'button', sd)
+                    shadowClick(element, 'span', sd)
+                    shadowClick(element, 'a', sd)
+                })
+            })
+
         }
     }
+
+    function clicker(element, elementKind) {
+        var rbutton = findElement(element, elementKind);
+        if (rbutton != undefined && i < maxTry) {
+            console.warn("Cookies refused " + elementKind)
+            //console.info(element + " - " + i)
+            rbutton.click()
+            i = maxTry
+            return true;
+        }
+    }
+
+    function shadowClick(element, elementKind, shadowElement) {
+        var rbutton = findElementInShadow(element, elementKind, shadowElement);
+        if (rbutton != undefined && i < maxTry) {
+            console.warn("Cookies refused button")
+            //console.info(element + " - " + i)
+            rbutton.click()
+            setCookie(webSiteUrl, true, 1)
+            window.location.reload();
+        }
+    }
+
 
 
     function setCookie(cname, cvalue, exdays) {
