@@ -12,6 +12,7 @@
     'use strict';
 
     let webSiteUrl = document.URL.split("/", 3)[2]
+    let cookieName = "cookieRefused"
     const excludeWebsites = []
 
     const wordings = ["Continuer sans accepter",
@@ -25,6 +26,8 @@
         "Reject all",
         "Use necessary cookies only",
         "Only necessary cookies",
+        "Necessary cookies only",
+        "Reject Optional",
         "Refuser",
         "Reject",
         "deny",
@@ -36,7 +39,7 @@
     var awaitPageLoad = undefined
     var shadowDom = undefined
 
-    if (!excludeWebsites.includes(webSiteUrl) && !getCookie(webSiteUrl)) {
+    if (!excludeWebsites.includes(webSiteUrl) && !getCookie(cookieName)) {
         awaitPageLoad = window.setInterval(isPageLoaded, 20)
     } else {
         console.log("Script already executed or is disabled for this site")
@@ -71,9 +74,10 @@
 
 
     function seekAndClickRefuseCookie() {
+        //console.log("CALL " + i)
         i++;
         if (i >= maxTry) {
-            setCookie(webSiteUrl, true, 1)
+            setCookie(cookieName, true, 1)
             console.warn("Clear interval " + i)
             window.clearInterval(seekAndDestroyCookie);
         } else {
@@ -120,7 +124,7 @@
             console.warn("Cookies refused button")
             //console.info(element + " - " + i)
             rbutton.click()
-            setCookie(webSiteUrl, true, 1)
+            setCookie(cookieName, true, 1)
             window.location.reload();
         }
     }
